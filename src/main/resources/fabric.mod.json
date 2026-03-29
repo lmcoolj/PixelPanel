@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "pixelpanel",
+  "version": "${version}",
+  "name": "PixelPanel",
+  "description": "A customizable HUD mod. Add, move, resize, and configure HUD elements like durability bars, minimaps, coordinates, and more.",
+  "authors": [
+    "Larus"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/pixelpanel/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.pixelpanel.PixelPanelClient"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

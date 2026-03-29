@@ -1,0 +1,19 @@
+{
+  "pixelpanel.key.open_editor": "Open PixelPanel Editor",
+  "pixelpanel.key.category": "PixelPanel",
+  "pixelpanel.editor.title": "PixelPanel Editor",
+  "pixelpanel.editor.add": "Add Element",
+  "pixelpanel.editor.remove": "Remove",
+  "pixelpanel.editor.done": "Done",
+  "pixelpanel.editor.reset": "Reset Position",
+  "pixelpanel.editor.toggle_visibility": "Toggle Visibility",
+  "pixelpanel.element.coordinates": "Coordinates",
+  "pixelpanel.element.fps_counter": "FPS Counter",
+  "pixelpanel.element.tool_durability": "Tool Durability",
+  "pixelpanel.element.armor_durability": "Armor Durability",
+  "pixelpanel.element.compass": "Compass",
+  "pixelpanel.element.time_of_day": "Time of Day",
+  "pixelpanel.element.debug_info": "Debug Info",
+  "pixelpanel.element.minimap": "Minimap",
+  "pixelpanel.picker.title": "Add HUD Element"
+}
