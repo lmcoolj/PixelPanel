@@ -1,48 +1,47 @@
 package com.pixelpanel.hud;
 
 import com.pixelpanel.gui.HudEditScreen;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public class HudRenderer implements HudRenderCallback {
-    private final HudElementRegistry registry;
+public class HudRenderer implements HudElement {
+    private final PanelElementRegistry registry;
 
-    public HudRenderer(HudElementRegistry registry) {
+    public HudRenderer(PanelElementRegistry registry) {
         this.registry = registry;
     }
 
     @Override
-    public void onHudRender(DrawContext context, RenderTickCounter tickCounter) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public void extractRenderState(GuiGraphicsExtractor context, DeltaTracker deltaTracker) {
+        Minecraft client = Minecraft.getInstance();
 
-        // Don't render HUD elements when the edit screen is open (it renders them itself)
-        if (client.currentScreen instanceof HudEditScreen) {
+        if (client.screen instanceof HudEditScreen) {
             return;
         }
 
-        if (client.player == null || client.world == null) {
+        if (client.player == null || client.level == null) {
             return;
         }
 
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
-        float tickDelta = tickCounter.getTickProgress(true);
+        int screenWidth = client.getWindow().getGuiScaledWidth();
+        int screenHeight = client.getWindow().getGuiScaledHeight();
+        float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(true);
 
-        for (HudElement element : registry.getAll()) {
+        for (PanelElement element : registry.getAll()) {
             if (!element.isVisible()) continue;
 
             int x = element.getScreenX(screenWidth);
             int y = element.getScreenY(screenHeight);
 
-            context.getMatrices().pushMatrix();
-            context.getMatrices().translate(x, y);
-            context.getMatrices().scale(element.getScale(), element.getScale());
+            context.pose().pushMatrix();
+            context.pose().translate(x, y);
+            context.pose().scale(element.getScale(), element.getScale());
 
             element.render(context, tickDelta, screenWidth, screenHeight);
 
-            context.getMatrices().popMatrix();
+            context.pose().popMatrix();
         }
     }
 }

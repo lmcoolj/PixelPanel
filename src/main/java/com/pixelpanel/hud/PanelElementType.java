@@ -4,7 +4,7 @@ import com.pixelpanel.hud.elements.*;
 
 import java.util.function.Supplier;
 
-public enum HudElementType {
+public enum PanelElementType {
     COORDINATES("pixelpanel.element.coordinates", CoordinatesElement::new, false),
     FPS_COUNTER("pixelpanel.element.fps_counter", FpsCounterElement::new, false),
     TOOL_DURABILITY("pixelpanel.element.tool_durability", ToolDurabilityElement::new, false),
@@ -15,16 +15,16 @@ public enum HudElementType {
     MINIMAP("pixelpanel.element.minimap", MinimapElement::new, false);
 
     private final String translationKey;
-    private final Supplier<HudElement> factory;
+    private final Supplier<PanelElement> factory;
     private final boolean allowMultiple;
 
-    HudElementType(String translationKey, Supplier<HudElement> factory, boolean allowMultiple) {
+    PanelElementType(String translationKey, Supplier<PanelElement> factory, boolean allowMultiple) {
         this.translationKey = translationKey;
         this.factory = factory;
         this.allowMultiple = allowMultiple;
     }
 
     public String getTranslationKey() { return translationKey; }
-    public HudElement create() { return factory.get(); }
+    public PanelElement create() { return factory.get(); }
     public boolean isAllowMultiple() { return allowMultiple; }
 }

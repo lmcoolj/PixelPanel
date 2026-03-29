@@ -2,9 +2,9 @@ package com.pixelpanel.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.pixelpanel.hud.HudElement;
-import com.pixelpanel.hud.HudElementRegistry;
-import com.pixelpanel.hud.HudElementType;
+import com.pixelpanel.hud.PanelElement;
+import com.pixelpanel.hud.PanelElementRegistry;
+import com.pixelpanel.hud.PanelElementType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +17,12 @@ public class ConfigManager {
     private static final Logger LOGGER = LoggerFactory.getLogger("PixelPanel");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private final HudElementRegistry registry;
+    private final PanelElementRegistry registry;
     private final Path configPath;
     private long lastSaveTime = 0;
     private boolean dirty = false;
 
-    public ConfigManager(HudElementRegistry registry) {
+    public ConfigManager(PanelElementRegistry registry) {
         this.registry = registry;
         this.configPath = FabricLoader.getInstance().getConfigDir().resolve("pixelpanel.json");
     }
@@ -45,9 +45,9 @@ public class ConfigManager {
             }
 
             registry.clear();
-            for (HudElementConfig elementConfig : config.elements) {
+            for (PanelElementConfig elementConfig : config.elements) {
                 try {
-                    HudElement element = elementConfig.type.create();
+                    PanelElement element = elementConfig.type.create();
                     applyConfig(element, elementConfig);
                     registry.add(element);
                 } catch (Exception e) {
@@ -65,8 +65,8 @@ public class ConfigManager {
     public void save() {
         PixelPanelConfig config = new PixelPanelConfig();
 
-        for (HudElement element : registry.getAll()) {
-            HudElementConfig ec = new HudElementConfig();
+        for (PanelElement element : registry.getAll()) {
+            PanelElementConfig ec = new PanelElementConfig();
             ec.id = element.getId();
             ec.type = element.getType();
             ec.anchorX = element.getAnchorX();
@@ -90,9 +90,7 @@ public class ConfigManager {
         }
     }
 
-    public void markDirty() {
-        dirty = true;
-    }
+    public void markDirty() { dirty = true; }
 
     public void saveIfDirty() {
         if (dirty && System.currentTimeMillis() - lastSaveTime > 500) {
@@ -103,26 +101,23 @@ public class ConfigManager {
     private void createDefaults() {
         registry.clear();
 
-        // Default: coordinates top-left
-        HudElement coords = HudElementType.COORDINATES.create();
+        PanelElement coords = PanelElementType.COORDINATES.create();
         coords.setAnchorX(0.01f);
         coords.setAnchorY(0.0f);
         registry.add(coords);
 
-        // Default: FPS counter top-right
-        HudElement fps = HudElementType.FPS_COUNTER.create();
+        PanelElement fps = PanelElementType.FPS_COUNTER.create();
         fps.setAnchorX(0.88f);
         fps.setAnchorY(0.0f);
         registry.add(fps);
 
-        // Default: compass top-center
-        HudElement compass = HudElementType.COMPASS.create();
+        PanelElement compass = PanelElementType.COMPASS.create();
         compass.setAnchorX(0.42f);
         compass.setAnchorY(0.0f);
         registry.add(compass);
     }
 
-    private void applyConfig(HudElement element, HudElementConfig config) {
+    private void applyConfig(PanelElement element, PanelElementConfig config) {
         element.setAnchorX(config.anchorX);
         element.setAnchorY(config.anchorY);
         element.setWidth(config.width);

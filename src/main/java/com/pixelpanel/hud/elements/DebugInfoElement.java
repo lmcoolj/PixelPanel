@@ -1,83 +1,72 @@
 package com.pixelpanel.hud.elements;
 
-import com.pixelpanel.hud.HudElement;
-import com.pixelpanel.hud.HudElementType;
+import com.pixelpanel.hud.PanelElement;
+import com.pixelpanel.hud.PanelElementType;
 import com.pixelpanel.util.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.LightType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebugInfoElement extends HudElement {
+public class DebugInfoElement extends PanelElement {
 
     public DebugInfoElement() {
-        super(HudElementType.DEBUG_INFO);
+        super(PanelElementType.DEBUG_INFO);
     }
 
     @Override
-    public void render(DrawContext context, float tickDelta, int screenWidth, int screenHeight) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        PlayerEntity player = client.player;
-        if (player == null || client.world == null) return;
+    public void render(GuiGraphicsExtractor context, float tickDelta, int screenWidth, int screenHeight) {
+        Minecraft client = Minecraft.getInstance();
+        Player player = client.player;
+        if (player == null || client.level == null) return;
 
-        TextRenderer textRenderer = client.textRenderer;
+        Font font = client.font;
         List<String> lines = new ArrayList<>();
 
-        // FPS
-        lines.add("FPS: " + client.getCurrentFps());
-
-        // Position
+        lines.add("FPS: " + client.getFps());
         lines.add(String.format("XYZ: %.1f / %.1f / %.1f", player.getX(), player.getY(), player.getZ()));
 
-        // Block position
-        BlockPos blockPos = player.getBlockPos();
+        BlockPos blockPos = player.blockPosition();
         lines.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 
-        // Chunk
         int chunkX = blockPos.getX() >> 4;
         int chunkZ = blockPos.getZ() >> 4;
         lines.add(String.format("Chunk: %d %d", chunkX, chunkZ));
 
-        // Facing direction
-        String facing = getFacingDirection(player.getYaw());
-        lines.add("Facing: " + facing + String.format(" (%.1f)", player.getYaw()));
+        String facing = getFacingDirection(player.getYRot());
+        lines.add("Facing: " + facing + String.format(" (%.1f)", player.getYRot()));
 
-        // Biome
-        RegistryEntry<Biome> biomeEntry = client.world.getBiome(blockPos);
-        String biomeName = biomeEntry.getKey()
-                .map(key -> key.getValue().getPath())
-                .orElse("unknown");
+        Holder<Biome> biomeEntry = client.level.getBiome(blockPos);
+        String biomeName = biomeEntry.unwrapKey()
+                .map(key -> key.identifier().getPath())
+                .orElse((String) "unknown");
         lines.add("Biome: " + biomeName);
 
-        // Light level
-        int blockLight = client.world.getLightLevel(LightType.BLOCK, blockPos);
-        int skyLight = client.world.getLightLevel(LightType.SKY, blockPos);
+        int blockLight = client.level.getBrightness(LightLayer.BLOCK, blockPos);
+        int skyLight = client.level.getBrightness(LightLayer.SKY, blockPos);
         lines.add(String.format("Light: %d (block: %d, sky: %d)", Math.max(blockLight, skyLight), blockLight, skyLight));
 
-        // Draw background
-        int lineHeight = textRenderer.fontHeight + 2;
+        int lineHeight = font.lineHeight + 2;
         int totalHeight = lines.size() * lineHeight + 6;
         int maxWidth = 4;
         for (String line : lines) {
-            maxWidth = Math.max(maxWidth, textRenderer.getWidth(line) + 8);
+            maxWidth = Math.max(maxWidth, font.width(line) + 8);
         }
 
         if (showBackground()) {
             RenderUtils.drawRect(context, 0, 0, Math.max(getWidth(), maxWidth), Math.max(getHeight(), totalHeight), 0x80000000);
         }
 
-        // Draw text
         int yPos = 3;
         for (String line : lines) {
-            context.drawText(textRenderer, line, 4, yPos, 0xFFFFFFFF, true);
+            context.text(font, line, 4, yPos, 0xFFFFFFFF, true);
             yPos += lineHeight;
         }
     }
@@ -98,10 +87,8 @@ public class DebugInfoElement extends HudElement {
 
     @Override
     public int getDefaultWidth() { return 200; }
-
     @Override
     public int getDefaultHeight() { return 80; }
-
     @Override
     public String getDisplayName() { return "Debug Info"; }
 }

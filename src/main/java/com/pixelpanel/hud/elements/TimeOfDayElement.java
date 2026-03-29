@@ -1,32 +1,31 @@
 package com.pixelpanel.hud.elements;
 
-import com.pixelpanel.hud.HudElement;
-import com.pixelpanel.hud.HudElementType;
+import com.pixelpanel.hud.PanelElement;
+import com.pixelpanel.hud.PanelElementType;
 import com.pixelpanel.util.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public class TimeOfDayElement extends HudElement {
+public class TimeOfDayElement extends PanelElement {
 
     public TimeOfDayElement() {
-        super(HudElementType.TIME_OF_DAY);
+        super(PanelElementType.TIME_OF_DAY);
     }
 
     @Override
-    public void render(DrawContext context, float tickDelta, int screenWidth, int screenHeight) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null) return;
+    public void render(GuiGraphicsExtractor context, float tickDelta, int screenWidth, int screenHeight) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null) return;
 
-        TextRenderer textRenderer = client.textRenderer;
+        Font font = client.font;
 
         if (showBackground()) {
             RenderUtils.drawRect(context, 0, 0, getWidth(), getHeight(), 0x80000000);
         }
 
-        long timeOfDay = client.world.getTimeOfDay() % 24000;
+        long timeOfDay = client.level.getOverworldClockTime() % 24000;
 
-        // MC time: 0 = 6:00 AM, 6000 = noon, 12000 = 6:00 PM, 18000 = midnight
         int hours = (int) ((timeOfDay / 1000 + 6) % 24);
         int minutes = (int) ((timeOfDay % 1000) * 60 / 1000);
 
@@ -36,24 +35,20 @@ public class TimeOfDayElement extends HudElement {
 
         String timeText = String.format("%d:%02d %s", displayHour, minutes, period);
 
-        // Icon indicator for day/night
         boolean isDay = timeOfDay < 12000;
-        String icon = isDay ? "\u2600" : "\u263D"; // Sun / Moon unicode
+        String icon = isDay ? "\u2600" : "\u263D";
         int iconColor = isDay ? 0xFFFFDD55 : 0xFFAAAAFF;
 
-        context.drawText(textRenderer, icon, 4, 4, iconColor, true);
-        context.drawText(textRenderer, timeText, 16, 4, 0xFFFFFFFF, true);
+        context.text(font, icon, 4, 4, iconColor, true);
+        context.text(font, timeText, 16, 4, 0xFFFFFFFF, true);
     }
 
     @Override
     public int getDefaultWidth() { return 90; }
-
     @Override
     public int getDefaultHeight() { return 18; }
-
     @Override
     public String getDisplayName() { return "Time of Day"; }
-
     @Override
     public boolean isResizable() { return false; }
 }

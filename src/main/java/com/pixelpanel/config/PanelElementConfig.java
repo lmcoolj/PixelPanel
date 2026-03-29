@@ -1,13 +1,13 @@
 package com.pixelpanel.config;
 
-import com.pixelpanel.hud.HudElementType;
+import com.pixelpanel.hud.PanelElementType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class HudElementConfig {
+public class PanelElementConfig {
     public String id;
-    public HudElementType type;
+    public PanelElementType type;
     public float anchorX;
     public float anchorY;
     public int width;
@@ -17,7 +17,7 @@ public class HudElementConfig {
     public boolean showBackground;
     public Map<String, Object> extraSettings;
 
-    public HudElementConfig() {
+    public PanelElementConfig() {
         this.extraSettings = new HashMap<>();
         this.scale = 1.0f;
         this.visible = true;

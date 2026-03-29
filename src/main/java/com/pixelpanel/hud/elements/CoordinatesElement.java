@@ -1,54 +1,46 @@
 package com.pixelpanel.hud.elements;
 
-import com.pixelpanel.hud.HudElement;
-import com.pixelpanel.hud.HudElementType;
+import com.pixelpanel.hud.PanelElement;
+import com.pixelpanel.hud.PanelElementType;
 import com.pixelpanel.util.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.entity.player.Player;
 
-public class CoordinatesElement extends HudElement {
+public class CoordinatesElement extends PanelElement {
 
     public CoordinatesElement() {
-        super(HudElementType.COORDINATES);
+        super(PanelElementType.COORDINATES);
     }
 
     @Override
-    public void render(DrawContext context, float tickDelta, int screenWidth, int screenHeight) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        PlayerEntity player = client.player;
+    public void render(GuiGraphicsExtractor context, float tickDelta, int screenWidth, int screenHeight) {
+        Minecraft client = Minecraft.getInstance();
+        Player player = client.player;
         if (player == null) return;
 
-        TextRenderer textRenderer = client.textRenderer;
+        Font font = client.font;
 
-        double x = player.getX();
-        double y = player.getY();
-        double z = player.getZ();
+        String xText = String.format("X: %.1f", player.getX());
+        String yText = String.format("Y: %.1f", player.getY());
+        String zText = String.format("Z: %.1f", player.getZ());
 
-        String xText = String.format("X: %.1f", x);
-        String yText = String.format("Y: %.1f", y);
-        String zText = String.format("Z: %.1f", z);
-
-        // Background
         if (showBackground()) {
             RenderUtils.drawRect(context, 0, 0, getWidth(), getHeight(), 0x80000000);
         }
 
-        // Text
         int padding = 4;
-        int lineHeight = textRenderer.fontHeight + 2;
-        context.drawText(textRenderer, xText, padding, padding, 0xFFFFFFFF, true);
-        context.drawText(textRenderer, yText, padding, padding + lineHeight, 0xFFFFFFFF, true);
-        context.drawText(textRenderer, zText, padding, padding + lineHeight * 2, 0xFFFFFFFF, true);
+        int lineHeight = font.lineHeight + 2;
+        context.text(font, xText, padding, padding, 0xFFFFFFFF, true);
+        context.text(font, yText, padding, padding + lineHeight, 0xFFFFFFFF, true);
+        context.text(font, zText, padding, padding + lineHeight * 2, 0xFFFFFFFF, true);
     }
 
     @Override
     public int getDefaultWidth() { return 50; }
-
     @Override
     public int getDefaultHeight() { return 38; }
-
     @Override
     public String getDisplayName() { return "Coordinates"; }
 }

@@ -1,14 +1,14 @@
 package com.pixelpanel.hud;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class HudElement {
+public abstract class PanelElement {
     private final String id;
-    private final HudElementType type;
+    private final PanelElementType type;
     private float anchorX;
     private float anchorY;
     private int width;
@@ -18,7 +18,7 @@ public abstract class HudElement {
     private boolean showBackground;
     private final Map<String, Object> extraSettings;
 
-    public HudElement(HudElementType type) {
+    public PanelElement(PanelElementType type) {
         this.id = UUID.randomUUID().toString();
         this.type = type;
         this.anchorX = 0.01f;
@@ -31,28 +31,15 @@ public abstract class HudElement {
         this.extraSettings = new HashMap<>();
     }
 
-    public abstract void render(DrawContext context, float tickDelta, int screenWidth, int screenHeight);
-
+    public abstract void render(GuiGraphicsExtractor context, float tickDelta, int screenWidth, int screenHeight);
     public abstract int getDefaultWidth();
-
     public abstract int getDefaultHeight();
-
     public abstract String getDisplayName();
 
-    public boolean isResizable() {
-        return true;
-    }
-
-    /** Minimum width this element can be resized to (defaults to default width). */
+    public boolean isResizable() { return true; }
     public int getMinWidth() { return getDefaultWidth(); }
-
-    /** Minimum height this element can be resized to (defaults to default height). */
     public int getMinHeight() { return getDefaultHeight(); }
-
-    /** Maximum width this element can be resized to (0 = unlimited). */
     public int getMaxWidth() { return 0; }
-
-    /** Maximum height this element can be resized to (0 = unlimited). */
     public int getMaxHeight() { return 0; }
 
     public int getScreenX(int screenWidth) {
@@ -65,13 +52,8 @@ public abstract class HudElement {
         return Math.max(0, Math.min(y, screenHeight - (int)(height * scale)));
     }
 
-    public int getScaledWidth() {
-        return (int) (width * scale);
-    }
-
-    public int getScaledHeight() {
-        return (int) (height * scale);
-    }
+    public int getScaledWidth() { return (int) (width * scale); }
+    public int getScaledHeight() { return (int) (height * scale); }
 
     public boolean containsPoint(int mouseX, int mouseY, int screenWidth, int screenHeight) {
         int x = getScreenX(screenWidth);
@@ -80,13 +62,10 @@ public abstract class HudElement {
                 && mouseY >= y && mouseY <= y + getScaledHeight();
     }
 
-    // Getters and setters
     public String getId() { return id; }
-    public HudElementType getType() { return type; }
-
+    public PanelElementType getType() { return type; }
     public float getAnchorX() { return anchorX; }
     public void setAnchorX(float anchorX) { this.anchorX = anchorX; }
-
     public float getAnchorY() { return anchorY; }
     public void setAnchorY(float anchorY) { this.anchorY = anchorY; }
 
@@ -106,12 +85,9 @@ public abstract class HudElement {
 
     public float getScale() { return scale; }
     public void setScale(float scale) { this.scale = Math.max(0.25f, Math.min(4.0f, scale)); }
-
     public boolean isVisible() { return visible; }
     public void setVisible(boolean visible) { this.visible = visible; }
-
     public boolean showBackground() { return showBackground; }
     public void setShowBackground(boolean showBackground) { this.showBackground = showBackground; }
-
     public Map<String, Object> getExtraSettings() { return extraSettings; }
 }

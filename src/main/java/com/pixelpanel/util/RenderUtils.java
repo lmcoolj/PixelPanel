@@ -1,41 +1,33 @@
 package com.pixelpanel.util;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class RenderUtils {
 
-    public static void drawRect(DrawContext context, int x, int y, int width, int height, int color) {
+    public static void drawRect(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
         context.fill(x, y, x + width, y + height, color);
     }
 
-    public static void drawRectOutline(DrawContext context, int x, int y, int width, int height, int color) {
-        // Top
+    public static void drawRectOutline(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
         context.fill(x, y, x + width, y + 1, color);
-        // Bottom
         context.fill(x, y + height - 1, x + width, y + height, color);
-        // Left
         context.fill(x, y, x + 1, y + height, color);
-        // Right
         context.fill(x + width - 1, y, x + width, y + height, color);
     }
 
-    public static void drawDashedRectOutline(DrawContext context, int x, int y, int width, int height, int color, int dashLength) {
-        // Top edge
+    public static void drawDashedRectOutline(GuiGraphicsExtractor context, int x, int y, int width, int height, int color, int dashLength) {
         for (int i = 0; i < width; i += dashLength * 2) {
             int end = Math.min(i + dashLength, width);
             context.fill(x + i, y, x + end, y + 1, color);
         }
-        // Bottom edge
         for (int i = 0; i < width; i += dashLength * 2) {
             int end = Math.min(i + dashLength, width);
             context.fill(x + i, y + height - 1, x + end, y + height, color);
         }
-        // Left edge
         for (int i = 0; i < height; i += dashLength * 2) {
             int end = Math.min(i + dashLength, height);
             context.fill(x, y + i, x + 1, y + end, color);
         }
-        // Right edge
         for (int i = 0; i < height; i += dashLength * 2) {
             int end = Math.min(i + dashLength, height);
             context.fill(x + width - 1, y + i, x + width, y + end, color);
@@ -54,12 +46,8 @@ public class RenderUtils {
     }
 
     public static int getDurabilityColor(float ratio) {
-        if (ratio > 0.6f) {
-            return 0xFF55FF55; // Green
-        } else if (ratio > 0.3f) {
-            return 0xFFFFFF55; // Yellow
-        } else {
-            return 0xFFFF5555; // Red
-        }
+        if (ratio > 0.6f) return 0xFF55FF55;
+        else if (ratio > 0.3f) return 0xFFFFFF55;
+        else return 0xFFFF5555;
     }
 }

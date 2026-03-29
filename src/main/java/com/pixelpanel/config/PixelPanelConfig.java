@@ -5,5 +5,5 @@ import java.util.List;
 
 public class PixelPanelConfig {
     public int version = 1;
-    public List<HudElementConfig> elements = new ArrayList<>();
+    public List<PanelElementConfig> elements = new ArrayList<>();
 }
