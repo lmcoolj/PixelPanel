@@ -12,7 +12,11 @@ public enum PanelElementType {
     COMPASS("pixelpanel.element.compass", CompassElement::new, false),
     TIME_OF_DAY("pixelpanel.element.time_of_day", TimeOfDayElement::new, false),
     DEBUG_INFO("pixelpanel.element.debug_info", DebugInfoElement::new, false),
-    MINIMAP("pixelpanel.element.minimap", MinimapElement::new, false);
+    MINIMAP("pixelpanel.element.minimap", MinimapElement::new, false),
+    BIOME("pixelpanel.element.biome", BiomeElement::new, false),
+    STATUS_EFFECTS("pixelpanel.element.status_effects", StatusEffectsElement::new, false),
+    CPS("pixelpanel.element.cps", CPSElement::new, false),
+    PING("pixelpanel.element.ping", PingElement::new, false);
 
     private final String translationKey;
     private final Supplier<PanelElement> factory;

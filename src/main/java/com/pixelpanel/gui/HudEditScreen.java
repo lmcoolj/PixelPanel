@@ -23,7 +23,8 @@ public class HudEditScreen extends Screen {
 
     private enum ResizeHandle { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT }
     private static final int HANDLE_SIZE = 6;
-    private static final int TOOLBAR_HEIGHT = 28;
+    private static final int TOOLBAR_HEIGHT = 32;
+    private static final int BOTTOM_BAR_HEIGHT = 18;
 
     public HudEditScreen(PanelElementRegistry registry, ConfigManager configManager) {
         super(Component.translatable("pixelpanel.editor.title"));
@@ -32,49 +33,49 @@ public class HudEditScreen extends Screen {
     }
 
     private int getEditorY(PanelElement element) {
-        int gameY = element.getScreenY(height);
+        int gameY = element.getScreenY(height - TOOLBAR_HEIGHT - BOTTOM_BAR_HEIGHT);
         return gameY + TOOLBAR_HEIGHT;
     }
 
     private float editorYToAnchor(int editorY) {
         int gameY = editorY - TOOLBAR_HEIGHT;
-        return Math.max(0, (float) gameY / height);
+        int usableHeight = height - TOOLBAR_HEIGHT - BOTTOM_BAR_HEIGHT;
+        return Math.max(0, Math.min(1, (float) gameY / usableHeight));
     }
 
     @Override
     protected void init() {
-        int buttonWidth = 70;
         int buttonHeight = 20;
         int spacing = 4;
-        int startX = 4;
-        int y = 4;
+        int startX = 6;
+        int y = 6;
 
-        addRenderableWidget(Button.builder(Component.translatable("pixelpanel.editor.add"), button -> {
+        addRenderableWidget(Button.builder(Component.literal("\u2795 Add"), button -> {
             togglePicker();
-        }).bounds(startX, y, buttonWidth, buttonHeight).build());
+        }).bounds(startX, y, 55, buttonHeight).build());
 
-        startX += buttonWidth + spacing;
+        startX += 55 + spacing;
 
-        addRenderableWidget(Button.builder(Component.translatable("pixelpanel.editor.remove"), button -> {
+        addRenderableWidget(Button.builder(Component.literal("\u2716 Remove"), button -> {
             if (selectedElement != null) {
                 registry.remove(selectedElement.getId());
                 selectedElement = null;
                 configManager.save();
             }
-        }).bounds(startX, y, buttonWidth, buttonHeight).build());
+        }).bounds(startX, y, 65, buttonHeight).build());
 
-        startX += buttonWidth + spacing;
+        startX += 65 + spacing;
 
-        addRenderableWidget(Button.builder(Component.translatable("pixelpanel.editor.toggle_visibility"), button -> {
+        addRenderableWidget(Button.builder(Component.literal("\uD83D\uDC41 Visible"), button -> {
             if (selectedElement != null) {
                 selectedElement.setVisible(!selectedElement.isVisible());
                 configManager.markDirty();
             }
-        }).bounds(startX, y, 100, buttonHeight).build());
+        }).bounds(startX, y, 65, buttonHeight).build());
 
-        startX += 100 + spacing;
+        startX += 65 + spacing;
 
-        addRenderableWidget(Button.builder(Component.literal("Toggle BG"), button -> {
+        addRenderableWidget(Button.builder(Component.translatable("pixelpanel.editor.toggle_bg"), button -> {
             if (selectedElement != null) {
                 selectedElement.setShowBackground(!selectedElement.showBackground());
                 configManager.markDirty();
@@ -83,7 +84,7 @@ public class HudEditScreen extends Screen {
 
         startX += 65 + spacing;
 
-        addRenderableWidget(Button.builder(Component.translatable("pixelpanel.editor.reset"), button -> {
+        addRenderableWidget(Button.builder(Component.literal("\u21BA Reset"), button -> {
             if (selectedElement != null) {
                 selectedElement.setWidth(selectedElement.getDefaultWidth());
                 selectedElement.setHeight(selectedElement.getDefaultHeight());
@@ -92,32 +93,35 @@ public class HudEditScreen extends Screen {
                 selectedElement.setAnchorY(0.5f - (float) selectedElement.getScaledHeight() / (2 * height));
                 configManager.markDirty();
             }
-        }).bounds(startX, y, buttonWidth + 20, buttonHeight).build());
+        }).bounds(startX, y, 60, buttonHeight).build());
 
-        addRenderableWidget(Button.builder(Component.translatable("pixelpanel.editor.done"), button -> {
+        addRenderableWidget(Button.builder(Component.literal("\u2714 Done"), button -> {
             onClose();
-        }).bounds(width - buttonWidth - 4, y, buttonWidth, buttonHeight).build());
+        }).bounds(width - 60 - 6, y, 60, buttonHeight).build());
     }
 
     private void togglePicker() {
         if (pickerWidget != null) {
             pickerWidget = null;
         } else {
-            pickerWidget = new ElementPickerWidget(4, 28, 160, height - 32, registry, element -> {
-                registry.add(element);
-                element.setAnchorX(0.5f - (float) element.getDefaultWidth() / (2 * width));
-                element.setAnchorY(0.5f - (float) element.getDefaultHeight() / (2 * height));
-                selectedElement = element;
-                configManager.save();
-                pickerWidget = null;
-            });
+            pickerWidget = new ElementPickerWidget(
+                    4, TOOLBAR_HEIGHT + 2, 170, height - TOOLBAR_HEIGHT - BOTTOM_BAR_HEIGHT - 4,
+                    registry, configManager, width);
         }
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        // Background overlay
         context.fill(0, 0, width, height, 0x40000000);
-        context.fill(0, 0, width, TOOLBAR_HEIGHT, 0x60000000);
+
+        // Toolbar — dark purple
+        context.fill(0, 0, width, TOOLBAR_HEIGHT, 0xD0100818);
+        context.fill(0, TOOLBAR_HEIGHT - 1, width, TOOLBAR_HEIGHT, 0xFF6633AA);
+
+        // Bottom bar
+        context.fill(0, height - BOTTOM_BAR_HEIGHT, width, height, 0xD0100818);
+        context.fill(0, height - BOTTOM_BAR_HEIGHT, width, height - BOTTOM_BAR_HEIGHT + 1, 0xFF6633AA);
 
         for (PanelElement element : registry.getAll()) {
             int x = element.getScreenX(width);
@@ -139,7 +143,7 @@ public class HudEditScreen extends Screen {
             int scaledH = element.getScaledHeight();
 
             if (element == selectedElement) {
-                RenderUtils.drawRectOutline(context, x - 1, y - 1, scaledW + 2, scaledH + 2, 0xFF55FFFF);
+                RenderUtils.drawRectOutline(context, x - 1, y - 1, scaledW + 2, scaledH + 2, 0xFFBB88FF);
 
                 if (element.isResizable()) {
                     drawHandle(context, x - HANDLE_SIZE / 2, y - HANDLE_SIZE / 2);
@@ -149,9 +153,9 @@ public class HudEditScreen extends Screen {
                 }
 
                 String name = element.getDisplayName();
-                context.text(font, name, x, y - 11, 0xFF55FFFF, true);
+                context.text(font, name, x, y - 11, 0xFFBB88FF, true);
             } else {
-                RenderUtils.drawDashedRectOutline(context, x - 1, y - 1, scaledW + 2, scaledH + 2, 0x80FFFFFF, 4);
+                RenderUtils.drawDashedRectOutline(context, x - 1, y - 1, scaledW + 2, scaledH + 2, 0x60BB88FF, 4);
             }
         }
 
@@ -161,13 +165,14 @@ public class HudEditScreen extends Screen {
 
         super.extractRenderState(context, mouseX, mouseY, delta);
 
-        context.text(font, "Click to select | Drag to move | Corners to resize | Scroll to scale",
-                4, height - 12, 0x80FFFFFF, false);
+        // Bottom bar help text
+        context.text(font, "Click to select  |  Drag to move  |  Corners to resize  |  Scroll to scale",
+                6, height - BOTTOM_BAR_HEIGHT + 4, 0x90BB88FF, false);
     }
 
     private void drawHandle(GuiGraphicsExtractor context, int x, int y) {
         context.fill(x, y, x + HANDLE_SIZE, y + HANDLE_SIZE, 0xFFFFFFFF);
-        context.fill(x + 1, y + 1, x + HANDLE_SIZE - 1, y + HANDLE_SIZE - 1, 0xFF55FFFF);
+        context.fill(x + 1, y + 1, x + HANDLE_SIZE - 1, y + HANDLE_SIZE - 1, 0xFFBB88FF);
     }
 
     @Override
@@ -177,7 +182,7 @@ public class HudEditScreen extends Screen {
         int mx = (int) event.x();
         int my = (int) event.y();
 
-        if (my < TOOLBAR_HEIGHT) return false;
+        if (my < TOOLBAR_HEIGHT || my > height - BOTTOM_BAR_HEIGHT) return false;
 
         if (pickerWidget != null && pickerWidget.mouseClicked(mx, my)) {
             return true;
@@ -223,7 +228,7 @@ public class HudEditScreen extends Screen {
 
         if (dragState == DragState.DRAGGING) {
             float newAnchorX = (float)(mx - dragOffsetX) / width;
-            int newEditorY = Math.max(TOOLBAR_HEIGHT, my - dragOffsetY);
+            int newEditorY = Math.max(TOOLBAR_HEIGHT, Math.min(height - BOTTOM_BAR_HEIGHT - selectedElement.getScaledHeight(), my - dragOffsetY));
             float newAnchorY = editorYToAnchor(newEditorY);
             selectedElement.setAnchorX(Math.max(0, Math.min(1, newAnchorX)));
             selectedElement.setAnchorY(Math.max(0, Math.min(1, newAnchorY)));

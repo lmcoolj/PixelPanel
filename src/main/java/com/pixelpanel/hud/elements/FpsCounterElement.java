@@ -20,20 +20,27 @@ public class FpsCounterElement extends PanelElement {
         int fps = client.getFps();
 
         int color;
-        if (fps >= 60) color = 0xFF55FF55;
-        else if (fps >= 30) color = 0xFFFFFF55;
-        else color = 0xFFFF5555;
-
-        String fpsText = fps + " FPS";
+        String indicator;
+        if (fps >= 60) {
+            color = 0xFF55FF55;
+            indicator = "\u25B2"; // triangle up
+        } else if (fps >= 30) {
+            color = 0xFFFFFF55;
+            indicator = "\u25AC"; // rectangle
+        } else {
+            color = 0xFFFF5555;
+            indicator = "\u25BC"; // triangle down
+        }
 
         if (showBackground()) {
             RenderUtils.drawRect(context, 0, 0, getWidth(), getHeight(), 0x80000000);
         }
-        context.text(font, fpsText, 4, 4, color, true);
+
+        context.text(font, indicator + " " + fps + " FPS", 4, 4, color, true);
     }
 
     @Override
-    public int getDefaultWidth() { return 70; }
+    public int getDefaultWidth() { return 75; }
     @Override
     public int getDefaultHeight() { return 18; }
     @Override

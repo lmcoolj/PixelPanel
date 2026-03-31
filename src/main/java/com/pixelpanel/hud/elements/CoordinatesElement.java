@@ -22,23 +22,20 @@ public class CoordinatesElement extends PanelElement {
 
         Font font = client.font;
 
-        String xText = String.format("X: %.1f", player.getX());
-        String yText = String.format("Y: %.1f", player.getY());
-        String zText = String.format("Z: %.1f", player.getZ());
-
         if (showBackground()) {
             RenderUtils.drawRect(context, 0, 0, getWidth(), getHeight(), 0x80000000);
         }
 
         int padding = 4;
         int lineHeight = font.lineHeight + 2;
-        context.text(font, xText, padding, padding, 0xFFFFFFFF, true);
-        context.text(font, yText, padding, padding + lineHeight, 0xFFFFFFFF, true);
-        context.text(font, zText, padding, padding + lineHeight * 2, 0xFFFFFFFF, true);
+
+        context.text(font, String.format("X: \u00A7f%.1f", player.getX()), padding, padding, 0xFFFF6666, true);
+        context.text(font, String.format("Y: \u00A7f%.1f", player.getY()), padding, padding + lineHeight, 0xFF66FF66, true);
+        context.text(font, String.format("Z: \u00A7f%.1f", player.getZ()), padding, padding + lineHeight * 2, 0xFF6666FF, true);
     }
 
     @Override
-    public int getDefaultWidth() { return 50; }
+    public int getDefaultWidth() { return 80; }
     @Override
     public int getDefaultHeight() { return 38; }
     @Override

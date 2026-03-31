@@ -90,4 +90,7 @@ public abstract class PanelElement {
     public boolean showBackground() { return showBackground; }
     public void setShowBackground(boolean showBackground) { this.showBackground = showBackground; }
     public Map<String, Object> getExtraSettings() { return extraSettings; }
+
+    /** Override in subclasses that hold GPU resources (textures, etc.) to release them. */
+    public void close() {}
 }

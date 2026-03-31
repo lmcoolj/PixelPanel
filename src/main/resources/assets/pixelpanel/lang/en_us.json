@@ -15,5 +15,10 @@
   "pixelpanel.element.time_of_day": "Time of Day",
   "pixelpanel.element.debug_info": "Debug Info",
   "pixelpanel.element.minimap": "Minimap",
+  "pixelpanel.element.biome": "Biome",
+  "pixelpanel.element.status_effects": "Status Effects",
+  "pixelpanel.element.cps": "CPS Counter",
+  "pixelpanel.element.ping": "Ping",
+  "pixelpanel.editor.toggle_bg": "Toggle BG",
   "pixelpanel.picker.title": "Add HUD Element"
 }
