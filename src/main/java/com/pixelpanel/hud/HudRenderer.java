@@ -17,7 +17,7 @@ public class HudRenderer implements HudElement {
     public void extractRenderState(GuiGraphicsExtractor context, DeltaTracker deltaTracker) {
         Minecraft client = Minecraft.getInstance();
 
-        if (client.screen instanceof HudEditScreen) {
+        if (client.gui.screen() instanceof HudEditScreen) {
             return;
         }
 

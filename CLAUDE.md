@@ -16,9 +16,9 @@ Requires Java 25. No test suite exists. No linter configured.
 
 ## Target Platform
 
-- Minecraft 26.1 (first unobfuscated version — no Yarn/Intermediary mappings, uses Mojang official names directly)
-- Fabric Loader 0.18.5, Fabric API 0.144.3+26.1
-- Fabric Loom 1.15-SNAPSHOT
+- Minecraft 26.2 (unobfuscated — no Yarn/Intermediary mappings, uses Mojang official names directly)
+- Fabric Loader 0.19.3, Fabric API 0.152.2+26.2
+- Fabric Loom 1.17-SNAPSHOT (Gradle 9.5.1 wrapper)
 - Client-side only mod
 
 ## Architecture
@@ -41,10 +41,11 @@ PixelPanel is a customizable HUD mod. Players add/move/resize/configure informat
 - **`PanelElementType`** — enum factory. Each variant has a translation key, `Supplier<PanelElement>` factory, and `allowMultiple` flag.
 - **`PanelElementRegistry`** — list-based container for active elements with add/remove/query by ID or type.
 
-### Minecraft 26.1 API Notes
+### Minecraft 26.2 API Notes
 
 These are non-obvious API names that differ from older Minecraft versions:
 
+- The current screen moved off `Minecraft` into the reorganized `Gui` class (26.2): get it with `client.gui.screen()` (not the old `client.screen` field) and set it with `client.gui.setScreen(...)` (not `client.setScreen(...)`). The in-game HUD is now a separate `Hud` reachable via `client.gui.hud`.
 - Rendering context is `GuiGraphicsExtractor` (not `GuiGraphics` or `DrawContext`)
 - Screen override is `extractRenderState()` (not `render()`)
 - Mouse events use `MouseButtonEvent` record: `mouseClicked(MouseButtonEvent, boolean)`, `mouseDragged(MouseButtonEvent, double, double)`, `mouseReleased(MouseButtonEvent)`
