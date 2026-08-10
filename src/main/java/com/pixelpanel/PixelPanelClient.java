@@ -41,8 +41,8 @@ public class PixelPanelClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openEditorKey.consumeClick()) {
-                if (client.screen == null) {
-                    client.setScreen(new HudEditScreen(registry, configManager));
+                if (client.gui.screen() == null) {
+                    client.gui.setScreen(new HudEditScreen(registry, configManager));
                 }
             }
         });
